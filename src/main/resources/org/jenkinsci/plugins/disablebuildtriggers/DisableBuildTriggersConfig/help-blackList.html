@@ -1,4 +1,8 @@
 <p>
-    A coma separated list of TriggerCauses (full classnames with package) to blacklist. Tasks with respecting causes are ignored and are not scheduled (thus never get into BuildQueue).
-    <b>defaults to TimerTrigger and SCMTrigger if left blank.</b>
+    A comma separated list of triggers (TriggerCauses) to blacklist. It is necessary to specify the full class names
+    including the package for the blacklisting to work.<br />
+    When specified, tasks triggered by the blacklisted triggers won't be scheduled by Jenkins.<br /><br />
+
+    The blacklist defaults to <b>hudson.triggers.TimerTrigger$TimerTriggerCause</b> and
+    <b>hudson.triggers.SCMTrigger$SCMTriggerCause</b> if left blank.
 </p>
