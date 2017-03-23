@@ -4,21 +4,20 @@
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <version>1.554.1</version>
+        <version>1.609.3</version>
     </parent>
 
-    <name>Jenkins Disable Build Triggers Plugin</name>
-    <description>disables build triggers but still lets you trigger manually and start downstream builds.</description>
-
-    <groupId>com.infonova.jenkins</groupId>
     <artifactId>disable-build-triggers-plugin</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>hpi</packaging>
 
+    <name>Disable Build Triggers Plugin</name>
+    <description>Disables build triggers but still lets you trigger manually and start downstream builds</description>
+
     <scm>
-        <connection>scm:git:https://github.com/infonova/jobConfigHistory-plugin.git</connection>
-        <developerConnection>scm:git:https://github.com/infonova/jobConfigHistory-plugin.git</developerConnection>
-        <url>https://github.com/infonova/jobConfigHistory-plugin</url>
+        <connection>scm:git:https://github.com/infonova/disable-build-triggers-plugin.git</connection>
+        <developerConnection>scm:git:https://github.com/infonova/disable-build-triggers-plugin.git</developerConnection>
+        <url>https://github.com/infonova/disable-build-triggers-plugin</url>
         <tag>HEAD</tag>
     </scm>
 
@@ -65,100 +64,40 @@
     </pluginRepositories>
 
     <properties>
-        <!-- compare: http://docs.codehaus.org/display/MAVENUSER/POM+Element+for+Source+File+Encoding -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <jacoco-maven-plugin.version>0.7.1.201405082137</jacoco-maven-plugin.version>
-        <maven-surefire-plugin.version>2.17</maven-surefire-plugin.version>
-        <maven-surefire-report-plugin.version>2.17</maven-surefire-report-plugin.version>
-        <maven-javadoc-plugin.version>2.9.1</maven-javadoc-plugin.version>
-        <maven-hpi-plugin.injectedTestName>InjectedIT</maven-hpi-plugin.injectedTestName>
+        <target-jdk.version>1.6</target-jdk.version>
     </properties>
 
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>${maven-dependency-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <phase>site</phase>
-                        <goals>
-                            <goal>tree</goal>
-                            <goal>analyze-only</goal>
-                            <goal>analyze-dep-mgt</goal>
-                        </goals>
-                        <configuration>
-                            <verbose>true</verbose>
-                            <ignoreDirect>false</ignoreDirect>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>${maven-surefire-plugin.version}</version>
-                <configuration>
-                    <redirectTestOutputToFile>true</redirectTestOutputToFile>
-                    <testFailureIgnore>false</testFailureIgnore>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <version>${maven-surefire-plugin.version}</version>
-                <configuration>
-                    <argLine>-Xms256m -Xmx512m -XX:MaxPermSize=128m</argLine>
-                    <redirectTestOutputToFile>true</redirectTestOutputToFile>
-                    <testFailureIgnore>true</testFailureIgnore>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>integration-test</goal>
-                        </goals>
-                    </execution>
-                </executions>
+                <groupId>org.jenkins-ci.tools</groupId>
+                <artifactId>maven-hpi-plugin</artifactId>
+                <extensions>true</extensions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>${target-jdk.version}</source>
+                    <target>${target-jdk.version}</target>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.1</version>
+            </plugin>
         </plugins>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-site-plugin</artifactId>
-                    <version>3.3</version>
-                    <executions>
-                        <execution>
-                            <id>attach-descriptor</id>
-                            <goals>
-                                <goal>attach-descriptor</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-                <!-- 1.509.X uses a SNAPSHOT-version of this plugin! -->
-                <plugin>
-                    <groupId>org.kohsuke</groupId>
-                    <artifactId>access-modifier-checker</artifactId>
-                    <version>1.4</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.jenkins-ci.tools</groupId>
-                    <artifactId>maven-hpi-plugin</artifactId>
-                    <version>1.106</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>
+
+        <extensions>
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-webdav-jackrabbit</artifactId>
+                <version>2.10</version>
+            </extension>
+        </extensions>
     </build>
 
 
