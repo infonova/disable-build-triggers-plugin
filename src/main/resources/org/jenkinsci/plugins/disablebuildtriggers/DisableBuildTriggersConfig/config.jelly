@@ -1,0 +1,11 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
+  <f:section title="${%Disable build triggers}">
+    <f:entry title="${%Suppress triggers}" field="suppressTriggers">
+      <f:checkbox />
+    </f:entry>
+    <f:entry title="${%Blacklist of triggers}" field="blackList">
+      <f:textbox/>
+    </f:entry>
+  </f:section>
+</j:jelly>

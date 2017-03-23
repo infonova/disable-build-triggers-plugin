@@ -1,4 +1,4 @@
-package com.infonova.jenkins;
+package org.jenkinsci.plugins.disablebuildtriggers;
 
 import hudson.Extension;
 import hudson.model.Cause;
@@ -16,12 +16,16 @@ import org.kohsuke.stapler.export.ExportedBean;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Extension
 @ExportedBean
 public class DisableBuildTriggersConfig extends GlobalConfiguration {
 
-    public static final List<Class<? extends Cause>> DEFAULTS = Arrays.asList(TimerTrigger.TimerTriggerCause.class, SCMTrigger.SCMTriggerCause.class);
+    private static final Logger LOGGER = Logger.getLogger(DisableBuildTriggersConfig.class.getName());
+
+    private static final List<Class<? extends Cause>> DEFAULTS = Arrays.asList(TimerTrigger.TimerTriggerCause.class, SCMTrigger.SCMTriggerCause.class);
 
     private String blackList;
 
@@ -32,7 +36,7 @@ public class DisableBuildTriggersConfig extends GlobalConfiguration {
         load();
         // create Configfile if not exists
         if (blackList == null) {
-            blackList = "";
+            blackList = StringUtils.EMPTY;
             save();
         }
     }
@@ -45,22 +49,23 @@ public class DisableBuildTriggersConfig extends GlobalConfiguration {
         this.suppressTriggers = suppressTriggers;
     }
 
-    public List<Class<? extends Cause>> getBlackListParsed() {
+    @Override
+    public String getDisplayName() {
+        return Messages.DisableBuildTriggersConfig_DisplayName();
+    }
+
+    public List<Class<? extends Cause>> getParsedBlackList() {
 
         if (StringUtils.isBlank(blackList)) {
             return  DEFAULTS;
         }
 
         try {
-            return parseBlackList();
-        } catch (ClassNotFoundException e) { // should not be possible because of validation
-            e.printStackTrace();
-            return DEFAULTS;                 // but just in case ... use the defaults
+            return parseBlackList(this.blackList);
+        } catch (ClassNotFoundException e) {
+            LOGGER.log(Level.WARNING, Messages.DisableBuildTriggersConfig_ErrorWhileParsingBlackList(e.getMessage()), e);
+            return DEFAULTS;
         }
-    }
-
-    private List<Class<? extends Cause>> parseBlackList() throws ClassNotFoundException {
-        return parseBlackList(this.blackList);
     }
 
     private List<Class<? extends Cause>> parseBlackList(String blackList) throws ClassNotFoundException {
@@ -76,21 +81,24 @@ public class DisableBuildTriggersConfig extends GlobalConfiguration {
     public String getBlackList() {
         return blackList;
     }
+
     public void setBlackList(String blackList) {
         this.blackList = blackList;
     }
-    public FormValidation doCheckBlackList(
-            @QueryParameter String blackList) {
+
+    public FormValidation doCheckBlackList(@QueryParameter String blackList) {
         if (StringUtils.isBlank(blackList)) {
-            return FormValidation.ok("using defaults.");
+            return FormValidation.ok(Messages.DisableBuildTriggersConfig_UsingDefaultBlacklist(StringUtils.join(DEFAULTS,",")));
         }
+
         try {
             parseBlackList(blackList);
         } catch (ClassNotFoundException e) {
-            return FormValidation.error(e, "could not parse Classes.");
+            return FormValidation.error(e, Messages.DisableBuildTriggersConfig_ClassParseError());
         }
         return FormValidation.ok();
     }
+
     public static DisableBuildTriggersConfig instance() {
         return (DisableBuildTriggersConfig) Jenkins.getInstance().getDescriptor(DisableBuildTriggersConfig.class);
     }
