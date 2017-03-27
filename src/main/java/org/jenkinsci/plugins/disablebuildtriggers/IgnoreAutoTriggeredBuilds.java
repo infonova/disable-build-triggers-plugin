@@ -1,4 +1,4 @@
-package com.infonova.jenkins;
+package org.jenkinsci.plugins.disablebuildtriggers;
 
 import hudson.Extension;
 import hudson.model.Action;
@@ -6,12 +6,10 @@ import hudson.model.Cause;
 import hudson.model.CauseAction;
 import hudson.model.Queue;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Created by kazesberger on 21.03.17.
- */
 @Extension
 public class IgnoreAutoTriggeredBuilds extends Queue.QueueDecisionHandler {
 
@@ -22,8 +20,9 @@ public class IgnoreAutoTriggeredBuilds extends Queue.QueueDecisionHandler {
             return true;
         }
         List<Cause> causes = getCauses(actions);
+
         for (Cause c : causes) {
-            if (config.getBlackListParsed().contains(c.getClass())) {
+            if (config.getParsedBlackList().contains(c.getClass())) {
                 return false;
             }
         }
@@ -31,11 +30,14 @@ public class IgnoreAutoTriggeredBuilds extends Queue.QueueDecisionHandler {
     }
 
     private List<Cause> getCauses(List<Action> actions) {
+        List<Cause> causes = new ArrayList<Cause>();
+
         for (Action a : actions) {
             if (a instanceof CauseAction) {
-                return Collections.unmodifiableList(((CauseAction) a).getCauses());
+                causes.addAll(((CauseAction) a).getCauses());
             }
         }
-        return null;
+
+        return Collections.unmodifiableList(causes);
     }
 }
