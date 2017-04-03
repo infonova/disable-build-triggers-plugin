@@ -3,5 +3,5 @@
   This view is used to render the installed plugins page.
 -->
 <div>
-  ${%This Plugin allows to disable scheduling of jobs by suppressing configurable triggers}
+  This Plugin allows to disable scheduling of jobs by suppressing configurable triggers
 </div>
