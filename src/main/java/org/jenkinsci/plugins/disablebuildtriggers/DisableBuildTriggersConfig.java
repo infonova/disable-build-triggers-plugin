@@ -8,6 +8,7 @@ import hudson.util.FormValidation;
 import jenkins.model.GlobalConfiguration;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
+
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
@@ -72,7 +73,8 @@ public class DisableBuildTriggersConfig extends GlobalConfiguration {
         List<Class<? extends Cause>> list = new ArrayList<Class<? extends Cause>>();
         for (String s : blackList.split(",")) {
             if (StringUtils.isNotBlank(s.trim())) {
-                list.add((Class<? extends Cause>) Class.forName(s.trim()));
+                ClassLoader classLoader = Jenkins.getInstance().getPluginManager().uberClassLoader;
+                list.add((Class<? extends Cause>) Class.forName(s.trim(), true, classLoader));
             }
         }
         return list;
